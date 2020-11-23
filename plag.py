@@ -34,7 +34,40 @@ def cosineSimilarity():
             keyword = inputQuery
             url = "https://google.com/search?q="+keyword
             html = get(url).text
-            soup = BeautifulSoup(html)
+
+            
+            soup = BeautifulSoup(html,features="lxml")
+            temp="""
+            class="kCrYT"
+            """
+            links_with_text = []
+            # for a in soup.find_all(temp, href=True):
+            #     print(a)
+            #     if a.text: 
+            #         links_with_text.append(a['href'])
+            # print(links_with_text)
+            anurag=[]
+            links_with_text=soup.find_all('a')
+            for links in links_with_text:
+                if 'href' in links.attrs:
+                    anurag.append(str(links.attrs['href']))
+                    # print(str(links.attrs['href'])+"\n")
+            anurag_temp=[]
+            for i in anurag:
+                if "/url?q=" in i:
+                    anurag_temp.append(i)
+            plag_result_links=[]
+            for i in anurag_temp:
+                first=i.find("q")
+                last=i.find("&")
+                plag_result_links.append(i[first:last])
+            yash=plag_result_links[0]
+            sarkari=plag_result_links[1]
+            print(yash[2:])
+            print(sarkari[2:])
+
+
+            
 
             # kill all script and style elements
             for script in soup(["script", "style"]):
