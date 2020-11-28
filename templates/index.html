@@ -30,6 +30,12 @@
 		<div class="group" id="result">
 		 {{ plag_meter }}
 	  </div>
+	  <div class="group" id="result">
+
+ 		{{link}}
+
+	 </div>
+
 	  <br>
 		<button type="submit" id="submitbutton" class="button buttonBlue">CHECK
 		  <div class="ripples buttonRipples"><span class="ripplesCircle"></span></div>
@@ -46,9 +52,10 @@
 
 
 
-	  <script>
+	  <script language="javascript" type="text/javascript">
         function ganttEach() {
 			$(document).ready(function(){
+
 				if($('#orgtext').val()){
 			$('#orgtextlabel').css('top', '-20px');
 			$('#orgtextlabel').css('left', '-2px');
@@ -63,8 +70,7 @@
 		 }
 				});
 		}window.setInterval(ganttEach, 100);
-
-	    
+		
 	  </script>
 </body>
 </html>

@@ -12,7 +12,7 @@ q = ""
 def home():
     return render_template('index.html')
 
-@app.route('/cosineSimilarity',methods=['POST'])
+@app.route('/cosineSimilarity',methods=['POST','GET'])
 
 def cosineSimilarity():
     universalSetOfUniqueWords = []
@@ -50,7 +50,7 @@ def cosineSimilarity():
             links_with_text=soup.find_all('a')
             for links in links_with_text:
                 if 'href' in links.attrs:
-                    anurag.append(str(links.attrs['href']))
+                    anurag.append((links.attrs['href']))
                     # print(str(links.attrs['href'])+"\n")
             anurag_temp=[]
             for i in anurag:
@@ -65,7 +65,7 @@ def cosineSimilarity():
             sarkari=plag_result_links[1]
             print(yash[2:])
             print(sarkari[2:])
-
+            
 
             
 
@@ -127,21 +127,13 @@ def cosineSimilarity():
 
     matchPercentage = (float)(dotProduct / (queryVectorMagnitude * databaseVectorMagnitude))*100
 
-    """
-    print queryWordList
-    print
-    print databaseWordList
-
-
-    print queryTF
-    print
-    print databaseTF
-    """
-
-
     output = matchPercentage
     output=round(output,2)
-    return render_template('index.html', plag_meter='Plagiarism Match: {}%'.format(output))
+    return( render_template('index.html', plag_meter='Plagiarism Match: {}%'.format(output), link='{}'.format(yash[2:]))            
+          )
+    
+
+    
 
 
 
@@ -180,7 +172,7 @@ def cosineSimilarity_api():
     databaseTF = []
 
     for word in universalSetOfUniqueWords:
-	    queryTfCounter = 0
+	    queryTfCounter = 0 
 	    databaseTfCounter = 0
 
 	    for word2 in queryWordList:
@@ -208,19 +200,6 @@ def cosineSimilarity_api():
     databaseVectorMagnitude = math.sqrt(databaseVectorMagnitude)
 
     matchPercentage = (float)(dotProduct / (queryVectorMagnitude * databaseVectorMagnitude))*100
-
-    """
-    print queryWordList
-    print
-    print databaseWordList
-
-
-    print queryTF
-    print
-    print databaseTF
-    """
-
-
     output = matchPercentage
     output=round(output,2)
     return jsonify(output)
