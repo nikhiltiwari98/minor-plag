@@ -15,20 +15,21 @@
 		<h2>PLAGIARISM CHECKER</h2>
 	  </hgroup>
 	<div class="login" id="logbox">
-	  <form action="{{ url_for('cosineSimilarity')}}" name="inputform" method="post" id="checkform" enctype="multipart/form-data">
-		<div class="group">
-		  <textarea form ="checkform" id="orgtext"  autofocus name="orgtext" cols="100" rows="7" wrap="soft"></textarea>
-		  <span class="bar"></span>
-		  <label id="orgtextlabel">Original Text (Optional)</label>
-		</div>
-		<div class="group">
-		   <textarea form ="checkform" id="plagtext"   autofocus name="plagtext" cols="100" rows="7" wrap="soft" required></textarea>
-		   <span class="bar"></span>
-		  <label id="plagtextlabel">Plagiarised Text *</label>
-		</div>
-		<br>
+	  <form action="{{ url_for('new')}}">
+		
+		
+		
+		<div class="group" id="result">
+		 {{ plag_meter }}
+	  </div>
+	  <div class="group" id="result">
+
+ 		
+        <a href="{{ link }}"> FOR BEST MATCH CLICK HERE </a>
+	 </div>
+
 	  <br>
-		<button type="submit" id="submitbutton" class="button buttonBlue">CHECK
+		<button type="submit" id="submitbutton" class="button buttonBlue">GO BACK
 		  <div class="ripples buttonRipples"><span class="ripplesCircle"></span></div>
 		</button>
 	  </form>
@@ -44,7 +45,6 @@
 
 
 	  <script language="javascript" type="text/javascript">
-
 
 
         function ganttEach() {
@@ -64,7 +64,7 @@
 		 }
 				});
 
-				
+		
 		}window.setInterval(ganttEach, 100);
 		
 	  </script>
