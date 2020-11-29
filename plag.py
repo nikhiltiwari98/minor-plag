@@ -35,6 +35,7 @@ def cosineSimilarity():
 
 	####################################################################################################
     database1=request.form.get('orgtext')
+    yash=""
     if(not database1):
             keyword = inputQuery
             url = "https://google.com/search?q="+keyword
@@ -130,8 +131,12 @@ def cosineSimilarity():
 
     output = matchPercentage
     output=round(output,2)
-    return render_template('index2.html', plag_meter='Plagiarism Match: {}%'.format(output), link='{}'.format(yash[2:]));        
-          
+   
+    
+    if (yash!=""):
+            return render_template('index2.html', plag_meter='Plagiarism Match: {}%'.format(output), link='{}'.format(yash[2:]));        
+    else :   
+            return render_template('index2.html', plag_meter='Plagiarism Match: {}%'.format(output));    
 
 if __name__ == "__main__":
     app.run(debug=True)
