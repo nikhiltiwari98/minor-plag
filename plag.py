@@ -4,8 +4,17 @@ import math
 from requests import get 
 import urllib
 from bs4 import BeautifulSoup 
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import re
+import nltk
+from sklearn.feature_extraction.text import CountVectorizer
+#nltk.download('stopwords') if it is first time uncomment it.
+from nltk.corpus import stopwords
+from nltk.stem.porter import PorterStemmer
+corpus = []
 app = Flask(__name__)
-
 
 
 
@@ -36,6 +45,8 @@ def cosineSimilarity():
 	####################################################################################################
     database1=request.form.get('orgtext')
     yash=""
+    # print(universalSetOfUniqueWords[0:20])
+    # print(queryWordList[0:20])
     if(not database1):
             keyword = inputQuery
             url = "https://google.com/search?q="+keyword
@@ -57,7 +68,7 @@ def cosineSimilarity():
             anurag_temp=[]
             for i in anurag:
                 if "/url?q=" in i:
-                    anurag_temp.append(i)
+                    anurag_temp.append(i)  
             plag_result_links=[]
             for i in anurag_temp:
                 first=i.find("q")
@@ -112,6 +123,56 @@ def cosineSimilarity():
 		    if word == word2:
 			    databaseTfCounter += 1
 	    databaseTF.append(databaseTfCounter)
+
+
+
+
+    ls1=[]
+    for i in universalSetOfUniqueWords:
+
+        word_count = universalSetOfUniqueWords.count(i)  # Pythons count function, count()
+        ls1.append((i,word_count))       
+
+
+    dict_1 = dict(ls1)
+
+
+    ls2=[]
+    for i in queryWordList:
+
+        word_count = queryWordList.count(i)  # Pythons count function, count()
+        ls2.append((i,word_count))       
+
+
+    dict_2 = dict(ls2)
+
+    # vectorizer_1 = CountVectorizer()
+    # # tokenize and build vocab
+    # vectorizer_1.fit(universalSetOfUniqueWords)
+    # vectorizer_2 = CountVectorizer()
+    # # tokenize and build vocab
+    # vectorizer_2.fit(queryWordList)
+
+
+    X1=[]
+    Y1=[]
+    X2=[]
+    Y2=[]
+    for i in dict_1:
+        X1.append(dict_1[i])
+        Y1.append(i)
+    for j in dict_2:
+        X2.append(dict_2[j])
+        Y2.append(j)
+    print(dict_1)
+    print(dict_2)
+    # plt.scatter(X1, Y1)
+    # plt.show()
+    # # # print(plt.show())
+    # plt.scatter(X2, Y2)
+    # plt.show()
+
+    # print(plt.show())
 
     dotProduct = 0
     for i in range (len(queryTF)):
