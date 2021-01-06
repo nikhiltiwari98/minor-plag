@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import re
+import string
 import nltk
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import PCA
@@ -19,6 +20,7 @@ from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 corpus = []
 app = Flask(__name__)
+stopwords=stopwords.words('english')
 
 
 
@@ -40,7 +42,7 @@ def cosineSimilarity():
     inputQuery = request.form.get('plagtext')
 
     lowercaseQuery = inputQuery.lower()
-    papa=lowercaseQuery.split(".")
+    display1=lowercaseQuery.split(".")
     queryWordList = re.sub("[^\w]", " ",lowercaseQuery).split()			#Replace punctuation by space and split
 	# queryWordList = map(str, queryWordList)					#This was causing divide by zero error
     for word in queryWordList:
@@ -102,10 +104,12 @@ def cosineSimilarity():
             database1 = '\n'.join(chunk for chunk in chunks if chunk)
 
     database1 = database1.lower()
-    beta=database1.split(".")
+    display2=database1.split(".")
 
 
 
+    # print(database1)
+    # print(queryWordList)
     databaseWordList = re.sub("[^\w]", " ",database1).split()	#Replace punctuation by space and split
 	# databaseWordList = map(str, databaseWordList)			#And this also leads to divide by zero error
 
@@ -117,6 +121,8 @@ def cosineSimilarity():
 
     queryTF = []
     databaseTF = []
+    # print(universalSetOfUniqueWords)
+    # print(queryWordList)
 
     for word in universalSetOfUniqueWords:
 	    queryTfCounter = 0
@@ -131,6 +137,11 @@ def cosineSimilarity():
 		    if word == word2:
 			    databaseTfCounter += 1
 	    databaseTF.append(databaseTfCounter)
+
+
+    # print(queryTF)
+    # print(databaseTF)
+    
 
 
 
@@ -154,50 +165,29 @@ def cosineSimilarity():
 
     dict_2 = dict(ls2)
 
-    # vectorizer_1 = CountVectorizer()
-    # # tokenize and build vocab
-    # vectorizer_1.fit(universalSetOfUniqueWords)
-    # vectorizer_2 = CountVectorizer()
-    # # tokenize and build vocab
-    # vectorizer_2.fit(queryWordList)
-
-
-    # X1=[]
-    # Y1=[]
-    # X2=[]
-    # Y2=[]
-    # for i in dict_1:
-    #     X1.append(dict_1[i])
-    #     Y1.append(i)
-    # for j in dict_2:
-    #     X2.append(dict_2[j])
-    #     Y2.append(j)
-    # print(dict_1)
-    # print(dict_2)
-    # Y1=[]
-    # Y2=[]
-    # for i in range(len(beta)):
-    #     Y1.append(int(i))
-    # for i in range(len(papa)):
-    #     Y2.append(int(i))
-
-
-
-    # print(papa[:10])
-    # print(beta[0:10])
-    papa2=[]
-    for i in range(len(papa)):
-        if papa[i] in beta:
-            papa2.append(papa[i])
-        if (len(beta)-1)==i and len(papa2)<beta:
-            papa2.extend(papa[i:len(beta)])
-    check1=len(papa2)
-    check2=len(beta)
+    display12=[]
+    for i in range(len(display1)):
+        if display1[i] in display2:
+            display12.append(display1[i])
+        if (len(display2)-1)==i and len(display12)<display2:
+            display12.extend(display1[i:len(display2)])
+    check1=len(display12)
+    check2=len(display2)
     if check1!=check2:
-        papa2=papa2[0:len(beta)]
+        display12=display12[0:len(display2)]
+
+    
+
+    def clean_string(text):
+        text=''.join([word for word in text if word not in string.punctuation])
+        text=text.lower()
+        text=' '.join([word for word in text.split() if word not in stopwords])
+        return text
+    display13=list(map(clean_string,display12))
+    display23=list(map(clean_string,display2))    
 
     cv = CountVectorizer(analyzer = 'word', max_features = 5000, lowercase=True, preprocessor=None, tokenizer=None, stop_words = 'english')  
-    vectors = cv.fit_transform(papa2)
+    vectors = cv.fit_transform(display13)
     kmeans = KMeans(n_clusters = 5, init = 'k-means++', random_state = 0)
     kmean_indices = kmeans.fit_predict(vectors)
 
@@ -214,12 +204,12 @@ def cosineSimilarity():
 
     
 
-    for i, txt in enumerate(papa2):
+    for i, txt in enumerate(display13):
         ax.annotate(txt, (x_axis[i], y_axis[i]))
-    plt.savefig("papa.png")
+    plt.savefig("display1.png")
 
     cv = CountVectorizer(analyzer = 'word', max_features = 5000, lowercase=True, preprocessor=None, tokenizer=None, stop_words = 'english')  
-    vectors = cv.fit_transform(beta)
+    vectors = cv.fit_transform(display23)
     kmeans = KMeans(n_clusters = 5, init = 'k-means++', random_state = 0)
     kmean_indices = kmeans.fit_predict(vectors)
 
@@ -234,13 +224,13 @@ def cosineSimilarity():
 
     ax.scatter(x_axis, y_axis, c=[colors[d] for d in kmean_indices])
 
-    for i, txt in enumerate(beta):
+    for i, txt in enumerate(display23):
         ax.annotate(txt, (x_axis[i], y_axis[i]))
-    plt.savefig("beta.png")
-    # print(len(papa2))
-    # print(len(beta))
-    # print(papa2)
-    # print(beta)
+    plt.savefig("display2.png")
+    # print(len(display12))
+    # print(len(display2))
+    # print(display12)
+    # print(display2)
     
 
     # # # print(plt.show())
@@ -273,10 +263,10 @@ def cosineSimilarity():
             return render_template('index2.html', plag_meter='Plagiarism Match: {}%'.format(output), link='{}'.format(yash[2:]));        
     else :   
             return render_template('index2.html', plag_meter='Plagiarism Match: {}%'.format(output));    
-    # plt.scatter(papa,Y2)
+    # plt.scatter(display1,Y2)
 
     # print(plt.show())
-    # plt.scatter(beta,Y1)
+    # plt.scatter(display2,Y1)
     # print(plt.show())
 
     
