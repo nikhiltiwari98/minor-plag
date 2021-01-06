@@ -10,6 +10,10 @@ import pandas as pd
 import re
 import nltk
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import PCA
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 #nltk.download('stopwords') if it is first time uncomment it.
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
@@ -36,6 +40,7 @@ def cosineSimilarity():
     inputQuery = request.form.get('plagtext')
 
     lowercaseQuery = inputQuery.lower()
+    papa=lowercaseQuery.split(".")
     queryWordList = re.sub("[^\w]", " ",lowercaseQuery).split()			#Replace punctuation by space and split
 	# queryWordList = map(str, queryWordList)					#This was causing divide by zero error
     for word in queryWordList:
@@ -97,6 +102,9 @@ def cosineSimilarity():
             database1 = '\n'.join(chunk for chunk in chunks if chunk)
 
     database1 = database1.lower()
+    beta=database1.split(".")
+
+
 
     databaseWordList = re.sub("[^\w]", " ",database1).split()	#Replace punctuation by space and split
 	# databaseWordList = map(str, databaseWordList)			#And this also leads to divide by zero error
@@ -154,22 +162,89 @@ def cosineSimilarity():
     # vectorizer_2.fit(queryWordList)
 
 
-    X1=[]
-    Y1=[]
-    X2=[]
-    Y2=[]
-    for i in dict_1:
-        X1.append(dict_1[i])
-        Y1.append(i)
-    for j in dict_2:
-        X2.append(dict_2[j])
-        Y2.append(j)
-    print(dict_1)
-    print(dict_2)
-    # plt.scatter(X1, Y1)
-    # plt.show()
+    # X1=[]
+    # Y1=[]
+    # X2=[]
+    # Y2=[]
+    # for i in dict_1:
+    #     X1.append(dict_1[i])
+    #     Y1.append(i)
+    # for j in dict_2:
+    #     X2.append(dict_2[j])
+    #     Y2.append(j)
+    # print(dict_1)
+    # print(dict_2)
+    # Y1=[]
+    # Y2=[]
+    # for i in range(len(beta)):
+    #     Y1.append(int(i))
+    # for i in range(len(papa)):
+    #     Y2.append(int(i))
+
+
+
+    # print(papa[:10])
+    # print(beta[0:10])
+    papa2=[]
+    for i in range(len(papa)):
+        if papa[i] in beta:
+            papa2.append(papa[i])
+        if (len(beta)-1)==i and len(papa2)<beta:
+            papa2.extend(papa[i:len(beta)])
+    check1=len(papa2)
+    check2=len(beta)
+    if check1!=check2:
+        papa2=papa2[0:len(beta)]
+
+    cv = CountVectorizer(analyzer = 'word', max_features = 5000, lowercase=True, preprocessor=None, tokenizer=None, stop_words = 'english')  
+    vectors = cv.fit_transform(papa2)
+    kmeans = KMeans(n_clusters = 5, init = 'k-means++', random_state = 0)
+    kmean_indices = kmeans.fit_predict(vectors)
+
+    pca = PCA(n_components=2)
+    scatter_plot_points = pca.fit_transform(vectors.toarray())
+
+    colors = ["r", "b", "c", "y", "m" ]
+
+    x_axis = [o[0] for o in scatter_plot_points]
+    y_axis = [o[1] for o in scatter_plot_points]
+    fig, ax = plt.subplots(figsize=(20,10))
+
+    ax.scatter(x_axis, y_axis, c=[colors[d] for d in kmean_indices])
+
+    
+
+    for i, txt in enumerate(papa2):
+        ax.annotate(txt, (x_axis[i], y_axis[i]))
+    plt.savefig("papa.png")
+
+    cv = CountVectorizer(analyzer = 'word', max_features = 5000, lowercase=True, preprocessor=None, tokenizer=None, stop_words = 'english')  
+    vectors = cv.fit_transform(beta)
+    kmeans = KMeans(n_clusters = 5, init = 'k-means++', random_state = 0)
+    kmean_indices = kmeans.fit_predict(vectors)
+
+    pca = PCA(n_components=2)
+    scatter_plot_points = pca.fit_transform(vectors.toarray())
+
+    colors = ["r", "b", "c", "y", "m" ]
+
+    x_axis = [o[0] for o in scatter_plot_points]
+    y_axis = [o[1] for o in scatter_plot_points]
+    fig, ax = plt.subplots(figsize=(20,10))
+
+    ax.scatter(x_axis, y_axis, c=[colors[d] for d in kmean_indices])
+
+    for i, txt in enumerate(beta):
+        ax.annotate(txt, (x_axis[i], y_axis[i]))
+    plt.savefig("beta.png")
+    # print(len(papa2))
+    # print(len(beta))
+    # print(papa2)
+    # print(beta)
+    
+
     # # # print(plt.show())
-    # plt.scatter(X2, Y2)
+    
     # plt.show()
 
     # print(plt.show())
@@ -198,6 +273,13 @@ def cosineSimilarity():
             return render_template('index2.html', plag_meter='Plagiarism Match: {}%'.format(output), link='{}'.format(yash[2:]));        
     else :   
             return render_template('index2.html', plag_meter='Plagiarism Match: {}%'.format(output));    
+    # plt.scatter(papa,Y2)
+
+    # print(plt.show())
+    # plt.scatter(beta,Y1)
+    # print(plt.show())
+
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
