@@ -257,10 +257,14 @@ def cosineSimilarity():
 
     output = matchPercentage
     output=round(output,2)
+  
    
     
+
+    
+
     if (yash!=""):
-            return render_template('index2.html', plag_meter='Plagiarism Match: {}%'.format(output), link='{}'.format(yash[2:]));        
+            return render_template('index2.html', plag_meter=' {}%'.format(output) ,plag_meter1=' {}%'.format(round((100-output),2)), link1='{}'.format(yash[2:]),link2='{}'.format(sarkari[2:]));        
     else :   
             return render_template('index2.html', plag_meter='Plagiarism Match: {}%'.format(output));    
     # plt.scatter(display1,Y2)
